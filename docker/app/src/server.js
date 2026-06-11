@@ -23,6 +23,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+// Middleware para endender formularios POST html
+app.use(express.urlencoded({
+	extended: true,
+	inflate: true,
+   limit: "1mb",
+   parameterLimit: 5000,
+   type: "application/x-www-form-urlencoded",
+}));
+
+
 // ===== RUTAS =====
 app.get('/', (req,res) => {
 	res.render('index',{
@@ -30,6 +40,33 @@ app.get('/', (req,res) => {
 		datos: TAREAS.getEmptyTask(),
 		errores: [],
 	});
+});
+
+
+app.post('/tareas', (req,res) => {
+	const errores = TAREAS.addTask(req.body);
+	let ret;
+
+	if (errores.length > 0 ) {
+		ret = res.status(400).render('index',{
+			tareas: TAREAS.getAll(),
+			datos: req.body,
+			errores
+		});
+	}
+	else {
+		ret = res.redirect('/');
+	}
+
+	return ret;
+} );
+
+
+app.post('/tareas/:taskId/delete', (req, res) => {
+	const taskId = Number(req.params.taskId);
+	TAREAS.deleteTask(taskId);
+
+	return res.redirect('/');
 });
 
 

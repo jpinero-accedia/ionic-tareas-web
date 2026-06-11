@@ -1,8 +1,10 @@
 // vim: ft=javascript:  ts=3: sw=3: noet:
 
+import validateTaskFunction from "./validaciones.js";
+
 class AlmacenTareas {
 	constructor () {
-		this.datos = [
+		this.data = [
 			{
 				id: 1,
 				titulo: "Preparar clase",
@@ -40,7 +42,7 @@ class AlmacenTareas {
 	}
 
 	getAll () {
-		return this.datos;
+		return this.data;
 	}
 
 	getEmptyTask () {
@@ -59,7 +61,36 @@ class AlmacenTareas {
 			confirmacion: '',
 		};
 	}
+
+	validateTask (task) {
+		// se sobreescribe con validateTaskFunction
+	}
+
+	addTask (task) {
+		const errores = this.validateTask(task);
+
+		const {confirmacion:no_conf, id:no_id, ...task_data} = task;
+
+		if (errores.length == 0) {
+			this.data.push({
+				id: this.nextId++,
+				...task_data	
+			});
+		}
+
+		return errores;
+	}
+
+	deleteTask (taskId) {
+		const index = this.data.findIndex( t => t.id === taskId );
+
+		if ( index > -1 ) {
+			this.data.splice(index,1);
+		}
+	}
 };
+
+AlmacenTareas.prototype.validateTask = validateTaskFunction;
 
 const TAREAS = new AlmacenTareas();
 
