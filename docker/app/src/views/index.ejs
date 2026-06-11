@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+
+   <meta charset="UTF-8">
+
+   <title>
+      Tareas Web
+   </title>
+
+</head>
+
+<body>
+
+   <h1>
+      Gestor de tareas
+   </h1>
+
+   <% if (errores.length > 0) { %>
+
+      <section>
+
+         <h2>
+            Errores de validación en servidor
+         </h2>
+
+         <ul>
+
+            <% errores.forEach(error => { %>
+
+               <li>
+                  <%= error %>
+               </li>
+
+            <% }) %>
+
+         </ul>
+
+      </section>
+
+   <% } %>
+
+   <form
+      id="form-tarea"
+      action="/tareas"
+      method="post"
+   >
+
+      <p>
+
+         <label for="titulo">
+            Título
+         </label>
+
+         <input
+            id="titulo"
+            type="text"
+            name="titulo"
+            required
+            minlength="3"
+            maxlength="60"
+            value="<%= datos.titulo ?? '' %>"
+         >
+
+      </p>
+
+      <p>
+
+         <label for="descripcion">
+            Descripción
+         </label>
+
+         <textarea
+            id="descripcion"
+            name="descripcion"
+            maxlength="300"
+         ><%= datos.descripcion ?? '' %></textarea>
+
+      </p>
+
+      <p>
+
+         <label for="codigo">
+            Código
+         </label>
+
+         <input
+            id="codigo"
+            type="text"
+            name="codigo"
+            required
+            pattern="TAR-[0-9]{3}"
+            placeholder="TAR-001"
+            value="<%= datos.codigo ?? '' %>"
+         >
+
+      </p>
+
+      <p>
+
+         <label for="prioridad">
+            Prioridad
+         </label>
+
+         <select
+            id="prioridad"
+            name="prioridad"
+            required
+         >
+
+            <option
+               value=""
+               <%= !datos.prioridad ? 'selected' : '' %>
+            >
+               Selecciona...
+            </option>
+
+            <option
+               value="baja"
+               <%= datos.prioridad === 'baja' ? 'selected' : '' %>
+            >
+               Baja
+            </option>
+
+            <option
+               value="media"
+               <%= datos.prioridad === 'media' ? 'selected' : '' %>
+            >
+               Media
+            </option>
+
+            <option
+               value="alta"
+               <%= datos.prioridad === 'alta' ? 'selected' : '' %>
+            >
+               Alta
+            </option>
+
+         </select>
+
+      </p>
+
+      <p>
+
+         <label for="estado">
+            Estado
+         </label>
+
+         <select
+            id="estado"
+            name="estado"
+            required
+         >
+
+            <option
+               value="pendiente"
+               <%= datos.estado === 'pendiente' ? 'selected' : '' %>
+            >
+               Pendiente
+            </option>
+
+            <option
+               value="en-proceso"
+               <%= datos.estado === 'en-proceso' ? 'selected' : '' %>
+            >
+               En proceso
+            </option>
+
+            <option
+               value="completada"
+               <%= datos.estado === 'completada' ? 'selected' : '' %>
+            >
+               Completada
+            </option>
+
+         </select>
+
+      </p>
+
+      <p>
+
+         <label for="fechaLimite">
+            Fecha límite
+         </label>
+
+         <input
+            id="fechaLimite"
+            type="date"
+            name="fechaLimite"
+            required
+            value="<%= datos.fechaLimite ?? '' %>"
+         >
+
+      </p>
+
+      <p>
+
+         <label for="estimacionHoras">
+            Estimación en horas
+         </label>
+
+         <input
+            id="estimacionHoras"
+            type="number"
+            name="estimacionHoras"
+            min="0.5"
+            max="40"
+            step="0.5"
+            required
+            value="<%= datos.estimacionHoras ?? '' %>"
+         >
+
+      </p>
+
+      <p>
+
+         <label for="responsableEmail">
+            Email del responsable
+         </label>
+
+         <input
+            id="responsableEmail"
+            type="email"
+            name="responsableEmail"
+            required
+            value="<%= datos.responsableEmail ?? '' %>"
+         >
+
+      </p>
+
+      <fieldset>
+
+         <legend>
+            Etiquetas
+         </legend>
+
+         <label>
+
+            <input
+               type="checkbox"
+               name="etiquetas"
+               value="html"
+               <%= Array.isArray(datos.etiquetas) && datos.etiquetas.includes('html') ? 'checked' : '' %>
+            >
+
+            HTML
+
+         </label>
+
+         <label>
+
+            <input
+               type="checkbox"
+               name="etiquetas"
+               value="express"
+               <%= Array.isArray(datos.etiquetas) && datos.etiquetas.includes('express') ? 'checked' : '' %>
+            >
+
+            Express
+
+         </label>
+
+         <label>
+
+            <input
+               type="checkbox"
+               name="etiquetas"
+               value="validacion"
+               <%= Array.isArray(datos.etiquetas) && datos.etiquetas.includes('validacion') ? 'checked' : '' %>
+            >
+
+            Validación
+
+         </label>
+
+      </fieldset>
+
+      <p>
+
+         <label>
+
+            <input
+               type="checkbox"
+               name="publica"
+               <%= datos.publica === 'on' || datos.publica === true ? 'checked' : '' %>
+            >
+
+            Tarea pública
+
+         </label>
+
+      </p>
+
+      <p>
+
+         <label>
+
+            <input
+               type="checkbox"
+               name="confirmacion"
+               required
+               <%= datos.confirmacion === 'on' ? 'checked' : '' %>
+            >
+
+            Confirmo que los datos son correctos
+
+         </label>
+
+      </p>
+
+      <button>
+         Crear tarea
+      </button>
+
+   </form>
+
+   <hr>
+
+   <h2>
+      Tareas almacenadas
+   </h2>
+
+   <ul>
+
+      <% tareas.forEach(tarea => { %>
+
+         <li>
+
+            <strong>
+               <%= tarea.titulo %>
+            </strong>
+
+            -
+            <%= tarea.prioridad %>
+
+            -
+            <%= tarea.estado ?? 'sin estado' %>
+
+            <% if (tarea.fechaLimite) { %>
+
+               -
+               límite:
+               <%= tarea.fechaLimite %>
+
+            <% } %>
+
+            <form
+               action="/tareas/<%= tarea.id %>/borrar"
+               method="post"
+               style="display:inline"
+            >
+
+               <button>
+                  Borrar
+               </button>
+
+            </form>
+
+         </li>
+
+      <% }) %>
+
+   </ul>
+
+   <script src="/js/validacion-cliente.js"></script>
+
+</body>
+
+</html>
