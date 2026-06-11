@@ -42,32 +42,67 @@ app.get('/', (req,res) => {
 	});
 });
 
-
-app.post('/tareas', (req,res) => {
-	const errores = TAREAS.addTask(req.body);
+app.post('/tarea', (req,res) => {
+	const op     = req.query.op ?? 'new';
+	let   taskId = req.query.id ?? 'new';
 	let ret;
 
-	if (errores.length > 0 ) {
-		ret = res.status(400).render('index',{
-			tareas: TAREAS.getAll(),
-			datos: req.body,
-			errores
-		});
-	}
-	else {
-		ret = res.redirect('/');
-	}
+	switch (op) {
+		case 'new':
+			const errores = TAREAS.addTask(req.body);
 
+			if (errores.length > 0 ) {
+				ret = res.status(400).render('index',{
+					tareas: TAREAS.getAll(),
+					datos: req.body,
+					errores
+				});
+			}
+			else {
+				ret = res.redirect('/');
+			}
+			break;
+
+		case 'delete':
+			taskId = Number(taskId);
+			TAREAS.deleteTask(taskId);
+			ret = res.redirect('/');
+
+			break;
+		
+		default:
+			ret = res.status(400).send("OPERATION UNDEFINED");
+			break;
+	}
 	return ret;
 } );
 
 
-app.post('/tareas/:taskId/delete', (req, res) => {
-	const taskId = Number(req.params.taskId);
-	TAREAS.deleteTask(taskId);
-
-	return res.redirect('/');
-});
+// app.post('/tareas', (req,res) => {
+// 	const errores = TAREAS.addTask(req.body);
+// 	let ret;
+// 
+// 	if (errores.length > 0 ) {
+// 		ret = res.status(400).render('index',{
+// 			tareas: TAREAS.getAll(),
+// 			datos: req.body,
+// 			errores
+// 		});
+// 	}
+// 	else {
+// 		ret = res.redirect('/');
+// 	}
+// 
+// 	return ret;
+// } );
+// 
+// 
+// app.post('/tareas/:taskId/delete', (req, res) => {
+// 	const taskId = Number(req.params.taskId);
+// 	TAREAS.deleteTask(taskId);
+// 
+// 	return res.redirect('/');
+// });
 
 
 // ====== ARRANCAR EL SERVIDOR ======

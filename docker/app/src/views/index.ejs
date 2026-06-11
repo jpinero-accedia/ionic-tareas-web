@@ -44,7 +44,7 @@
 
    <form
       id="form-tarea"
-      action="/tareas"
+      action="/tarea?op=new"
       method="post"
    >
 
@@ -347,7 +347,7 @@
             <% } %>
 
             <form
-               action="/tareas/<%= tarea.id %>/delete"
+               action="/tarea?op=delete&id=<%= tarea.id %>"
                method="post"
                style="display:inline"
             >
